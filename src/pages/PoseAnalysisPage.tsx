@@ -52,8 +52,11 @@ export default function PoseAnalysisPage() {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
       return () => clearTimeout(timer)
     } else if (countdown === 0 && phase === 'detecting') {
-      startDetection()
-      setElapsed(0)
+      const timer = setTimeout(() => {
+        startDetection()
+        setElapsed(0)
+      }, 0)
+      return () => clearTimeout(timer)
     }
   }, [countdown, phase, startDetection])
 

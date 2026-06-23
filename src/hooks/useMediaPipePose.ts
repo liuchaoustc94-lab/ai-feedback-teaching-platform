@@ -441,11 +441,15 @@ export function useMediaPipePose() {
   }, [])
 
   useEffect(() => {
-    initPose()
+    const timer = setTimeout(() => {
+      void initPose()
+    }, 0)
+
     return () => {
+      clearTimeout(timer)
       stopCamera()
     }
-  }, [])
+  }, [initPose, stopCamera])
 
   return {
     videoRef,

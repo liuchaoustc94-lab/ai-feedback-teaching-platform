@@ -13,23 +13,23 @@ interface Particle {
   color: string
 }
 
+const COLORS = ['#dc2f1b', '#ff6b57', '#ff8f80']
+const WANDER_COLORS = ['#e5e5e5', '#d1d1cf', '#e8e8e6']
+const PARTICLE_SPEED = 0.4
+
 export default function HeroSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<Particle[]>([])
   const mouseRef = useRef({ x: 0, y: 0, prevX: 0, prevY: 0 })
   const rafRef = useRef<number>(0)
 
-  const COLORS = ['#dc2f1b', '#ff6b57', '#ff8f80']
-  const WANDER_COLORS = ['#e5e5e5', '#d1d1cf', '#e8e8e6']
-  const SPEED = 0.4
-
   const spawnParticle = useCallback((x: number, y: number, vx: number, vy: number, isWander: boolean = false) => {
     const colors = isWander ? WANDER_COLORS : COLORS
     const particle: Particle = {
       x,
       y,
-      vx: vx * SPEED,
-      vy: vy * SPEED,
+      vx: vx * PARTICLE_SPEED,
+      vy: vy * PARTICLE_SPEED,
       life: 1,
       maxLife: isWander ? 200 + Math.random() * 100 : 60 + Math.random() * 40,
       size: isWander ? 1 + Math.random() * 2 : 2 + Math.random() * 4,
