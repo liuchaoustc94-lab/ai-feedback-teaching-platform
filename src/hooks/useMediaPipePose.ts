@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Pose } from '@mediapipe/pose'
 import type { Results, NormalizedLandmark } from '@mediapipe/pose'
-import { Camera } from '@mediapipe/camera_utils'
 
 export interface JointAngle {
   name: string
@@ -256,7 +255,9 @@ export function useMediaPipePose() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const poseRef = useRef<Pose | null>(null)
-  const cameraRef = useRef<Camera | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const frameRequestRef = useRef<number | null>(null)
+  const processingFrameRef = useRef(false)
   const metricsRef = useRef<PoseMetrics[]>([])
 
   const [isReady, setIsReady] = useState(false)
@@ -401,30 +402,85 @@ export function useMediaPipePose() {
     if (!video || !poseRef.current) return
 
     try {
-      const camera = new Camera(video, {
-        onFrame: async () => {
-          if (poseRef.current) {
-            await poseRef.current.send({ image: video })
-          }
+      setError(null)
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'user',
         },
-        width: 640,
-        height: 480,
       })
 
-      await camera.start()
-      cameraRef.current = camera
+      streamRef.current = stream
+      video.srcObject = stream
+      video.muted = true
+      video.playsInline = true
+
+      if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+        await new Promise<void>((resolve) => {
+          video.onloadedmetadata = () => resolve()
+        })
+      }
+
+      await video.play()
       setCameraActive(true)
+
+      const processFrame = async () => {
+        const activeVideo = videoRef.current
+        const pose = poseRef.current
+
+        if (!activeVideo || !pose || !streamRef.current) return
+
+        if (
+          activeVideo.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+          activeVideo.videoWidth > 0 &&
+          activeVideo.videoHeight > 0 &&
+          !processingFrameRef.current
+        ) {
+          processingFrameRef.current = true
+          try {
+            await pose.send({ image: activeVideo })
+          } finally {
+            processingFrameRef.current = false
+          }
+        }
+
+        frameRequestRef.current = requestAnimationFrame(processFrame)
+      }
+
+      frameRequestRef.current = requestAnimationFrame(processFrame)
     } catch (err) {
-      setError('无法访问摄像头，请确保已授予摄像头权限')
+      setError('无法访问摄像头，请检查浏览器权限，或确认没有其他应用正在占用摄像头')
       console.error(err)
     }
   }, [])
 
   const stopCamera = useCallback(() => {
-    if (cameraRef.current) {
-      cameraRef.current.stop()
-      cameraRef.current = null
+    if (frameRequestRef.current !== null) {
+      cancelAnimationFrame(frameRequestRef.current)
+      frameRequestRef.current = null
     }
+
+    processingFrameRef.current = false
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+    }
+
+    if (videoRef.current) {
+      videoRef.current.pause()
+      videoRef.current.srcObject = null
+    }
+
+    const canvas = canvasRef.current
+    const ctx = canvas?.getContext('2d')
+    if (canvas && ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    }
+
     setCameraActive(false)
   }, [])
 
