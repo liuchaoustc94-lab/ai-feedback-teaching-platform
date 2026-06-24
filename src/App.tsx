@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router'
 import Lenis from '@studio-freight/lenis'
 import HomePage from './pages/HomePage'
 import PoseAnalysisPage from './pages/PoseAnalysisPage'
+import TrainingArchivePage from './pages/TrainingArchivePage'
 
 function App() {
   const lenisRef = useRef<Lenis | null>(null)
@@ -30,6 +31,7 @@ function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/pose-analysis" element={<PoseAnalysisPage />} />
+      <Route path="/training-archive" element={<TrainingArchivePage />} />
     </Routes>
   )
 }

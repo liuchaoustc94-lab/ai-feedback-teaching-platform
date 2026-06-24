@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import {
   ArrowLeft, Camera, CameraOff, Play, Square, Download,
@@ -6,6 +6,7 @@ import {
   ChevronRight, FileText, TrendingUp, AlertTriangle
 } from 'lucide-react'
 import { useMediaPipePose } from '../hooks/useMediaPipePose'
+import { savePoseReportToArchive } from '../lib/trainingArchive'
 
 const postureQualityMap = {
   excellent: { label: '优秀', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' },
@@ -101,6 +102,9 @@ export default function PoseAnalysisPage() {
   const [countdown, setCountdown] = useState(0)
   const [phase, setPhase] = useState<'idle' | 'camera' | 'detecting' | 'report'>('idle')
   const [elapsed, setElapsed] = useState(0)
+  const savedReportRef = useRef<string | null>(null)
+  const moduleCode = lessonCode ?? 'POSE'
+  const moduleTitle = lesson?.title ?? '姿态识别与分析'
 
   // Timer during detection
   useEffect(() => {
@@ -126,6 +130,16 @@ export default function PoseAnalysisPage() {
       return () => clearTimeout(timer)
     }
   }, [countdown, phase, startDetection])
+
+  useEffect(() => {
+    if (phase !== 'report' || !report) return
+
+    const reportId = `${moduleCode}-${report.endTime}`
+    if (savedReportRef.current === reportId) return
+
+    savePoseReportToArchive(report, moduleCode, moduleTitle)
+    savedReportRef.current = reportId
+  }, [moduleCode, moduleTitle, phase, report])
 
   const handleStartCamera = async () => {
     await startCamera()
@@ -223,7 +237,7 @@ export default function PoseAnalysisPage() {
             </button>
             <div className="w-px h-5 bg-[#e5e5e5]" />
             <span className="font-serif-cn text-sm text-[#111]">
-              {lesson ? `${lessonCode} · ${lesson.title}` : '姿态识别与分析'}
+              {lesson ? `${lessonCode} · ${moduleTitle}` : moduleTitle}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -278,7 +292,7 @@ export default function PoseAnalysisPage() {
                 <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#111]/80">
                   <Camera size={48} className="text-white/40 mb-4" />
                   <p className="text-white text-lg font-medium mb-2">
-                    {lesson ? lesson.title : '姿态识别与分析'}
+                    {moduleTitle}
                   </p>
                   <p className="text-white/50 text-sm mb-6 text-center max-w-md px-6">
                     {lesson?.description ?? '使用摄像头实时识别身体关节点，分析姿态对称性、关节角度，并生成分析报告'}
