@@ -115,3 +115,10 @@ export function savePoseReportToArchive(
 export function clearArchiveRecords() {
   localStorage.removeItem(recordsKey)
 }
+
+export function clearArchiveRecordsForIdentity(anonymousId: string) {
+  const remainingRecords = readArchiveRecords().filter(
+    (record) => record.anonymousId !== anonymousId
+  )
+  writeArchiveRecords(remainingRecords)
+}

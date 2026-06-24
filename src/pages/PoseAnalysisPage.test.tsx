@@ -4,9 +4,16 @@ import { MemoryRouter, Route, Routes } from 'react-router'
 import PoseAnalysisPage from './PoseAnalysisPage'
 import type { PoseReport } from '../lib/poseMetrics'
 
-const navigateMock = vi.fn()
-const savePoseReportToArchiveMock = vi.fn()
-const stopDetectionMock = vi.fn()
+const mocks = vi.hoisted(() => ({
+  navigate: vi.fn(),
+  savePoseReportToArchive: vi.fn(),
+  startCamera: vi.fn(),
+  stopCamera: vi.fn(),
+  startDetection: vi.fn(),
+  stopDetection: vi.fn(),
+  setSelectedDeviceId: vi.fn(),
+  hookState: {} as Record<string, unknown>,
+}))
 
 const validReport: PoseReport = {
   metrics: [
@@ -38,12 +45,12 @@ vi.mock('react-router', async () => {
   const actual = await vi.importActual<typeof import('react-router')>('react-router')
   return {
     ...actual,
-    useNavigate: () => navigateMock,
+    useNavigate: () => mocks.navigate,
   }
 })
 
 vi.mock('../lib/trainingArchive', () => ({
-  savePoseReportToArchive: (...args: unknown[]) => savePoseReportToArchiveMock(...args),
+  savePoseReportToArchive: (...args: unknown[]) => mocks.savePoseReportToArchive(...args),
 }))
 
 vi.mock('../hooks/useMediaPipePose', () => ({
@@ -59,11 +66,12 @@ vi.mock('../hooks/useMediaPipePose', () => ({
     videoDevices: [],
     selectedDeviceId: '',
     previewInfo: null,
-    setSelectedDeviceId: vi.fn(),
-    startCamera: vi.fn(),
-    stopCamera: vi.fn(),
-    startDetection: vi.fn(),
-    stopDetection: stopDetectionMock,
+    setSelectedDeviceId: mocks.setSelectedDeviceId,
+    startCamera: mocks.startCamera,
+    stopCamera: mocks.stopCamera,
+    startDetection: mocks.startDetection,
+    stopDetection: mocks.stopDetection,
+    ...mocks.hookState,
   }),
 }))
 
@@ -79,9 +87,15 @@ function renderPage(initialEntry = '/pose-analysis') {
 
 describe('PoseAnalysisPage', () => {
   beforeEach(() => {
-    navigateMock.mockClear()
-    savePoseReportToArchiveMock.mockClear()
-    stopDetectionMock.mockClear()
+    mocks.navigate.mockClear()
+    mocks.savePoseReportToArchive.mockClear()
+    mocks.startCamera.mockClear()
+    mocks.stopCamera.mockClear()
+    mocks.startDetection.mockClear()
+    mocks.stopDetection.mockClear()
+    mocks.setSelectedDeviceId.mockClear()
+    mocks.hookState = {}
+    vi.restoreAllMocks()
   })
 
   it('customizes copy for lesson-specific pose modules', () => {
@@ -97,9 +111,9 @@ describe('PoseAnalysisPage', () => {
 
     await user.click(screen.getByRole('button', { name: '停止并生成报告' }))
 
-    expect(stopDetectionMock).toHaveBeenCalled()
+    expect(mocks.stopDetection).toHaveBeenCalled()
     await waitFor(() => {
-      expect(savePoseReportToArchiveMock).toHaveBeenCalledWith(
+      expect(mocks.savePoseReportToArchive).toHaveBeenCalledWith(
         validReport,
         'F2.1',
         '单腿站立平衡测试'
@@ -114,11 +128,113 @@ describe('PoseAnalysisPage', () => {
     await user.click(screen.getByRole('button', { name: '停止并生成报告' }))
 
     await waitFor(() => {
-      expect(savePoseReportToArchiveMock).toHaveBeenCalledWith(
+      expect(mocks.savePoseReportToArchive).toHaveBeenCalledWith(
         validReport,
         'POSE',
         '姿态识别与分析'
       )
     })
+  })
+
+  it('navigates back to the home page from the header', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: '返回' }))
+
+    expect(mocks.navigate).toHaveBeenCalledWith('/')
+  })
+
+  it('shows camera errors from the pose hook', () => {
+    mocks.hookState = {
+      isDetecting: false,
+      report: null,
+      error: '无法访问摄像头，请检查浏览器权限',
+    }
+
+    renderPage()
+
+    expect(screen.getByText('出错啦')).toBeInTheDocument()
+    expect(screen.getByText('无法访问摄像头，请检查浏览器权限')).toBeInTheDocument()
+  })
+
+  it('starts camera preview and then starts detection countdown', async () => {
+    const user = userEvent.setup()
+    mocks.hookState = {
+      isDetecting: false,
+      report: null,
+      cameraActive: true,
+      videoDevices: [
+        {
+          deviceId: 'camera-1',
+          groupId: 'group-1',
+          kind: 'videoinput',
+          label: 'FaceTime HD Camera',
+          toJSON: () => ({}),
+        },
+      ],
+      previewInfo: {
+        width: 1280,
+        height: 720,
+        readyState: 4,
+        paused: false,
+        deviceLabel: 'FaceTime HD Camera',
+      },
+    }
+
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: '开启摄像头' }))
+
+    expect(mocks.startCamera).toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: '开始检测' })).toBeInTheDocument()
+    expect(screen.getByLabelText('选择摄像头')).toBeInTheDocument()
+    expect(screen.getByText(/FaceTime HD Camera · 1280x720/)).toBeInTheDocument()
+
+    await user.selectOptions(screen.getByLabelText('选择摄像头'), 'camera-1')
+    expect(mocks.setSelectedDeviceId).toHaveBeenCalledWith('camera-1')
+
+    await user.click(screen.getByRole('button', { name: '开始检测' }))
+    expect(screen.getByText('3')).toBeInTheDocument()
+  })
+
+  it('reconnects the camera from the preview controls', async () => {
+    const user = userEvent.setup()
+    mocks.hookState = {
+      isDetecting: false,
+      report: null,
+      cameraActive: true,
+    }
+
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: '开启摄像头' }))
+    await user.click(screen.getByRole('button', { name: '重新连接' }))
+
+    expect(mocks.stopCamera).toHaveBeenCalled()
+    expect(mocks.startCamera).toHaveBeenCalledTimes(2)
+  })
+
+  it('exports the generated report as a text file', async () => {
+    const user = userEvent.setup()
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:report')
+    const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+    const clickMock = vi.fn()
+    vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      const element = document.createElementNS('http://www.w3.org/1999/xhtml', tagName)
+      if (tagName === 'a') {
+        Object.defineProperty(element, 'click', { value: clickMock })
+      }
+      return element as HTMLElement
+    })
+
+    renderPage('/pose-analysis?lesson=F4.2')
+
+    await user.click(screen.getByRole('button', { name: '停止并生成报告' }))
+    await user.click(screen.getByRole('button', { name: '导出报告' }))
+
+    expect(createObjectURL).toHaveBeenCalledWith(expect.any(Blob))
+    expect(clickMock).toHaveBeenCalled()
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:report')
   })
 })

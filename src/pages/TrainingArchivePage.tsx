@@ -10,7 +10,7 @@ import {
   User,
 } from 'lucide-react'
 import {
-  clearArchiveRecords,
+  clearArchiveRecordsForIdentity,
   readArchiveIdentity,
   readArchiveRecords,
   saveArchiveIdentity,
@@ -96,8 +96,12 @@ export default function TrainingArchivePage() {
   }
 
   const handleClear = () => {
-    clearArchiveRecords()
-    setRecords([])
+    if (!identity) return
+
+    clearArchiveRecordsForIdentity(identity.anonymousId)
+    setRecords((currentRecords) =>
+      currentRecords.filter((record) => record.anonymousId !== identity.anonymousId)
+    )
   }
 
   return (
@@ -198,7 +202,7 @@ export default function TrainingArchivePage() {
                 </button>
                 <button
                   onClick={handleClear}
-                  disabled={records.length === 0}
+                  disabled={myRecords.length === 0}
                   className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#d1d1cf] px-3 py-2 text-xs text-[#555] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Trash2 size={14} />

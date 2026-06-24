@@ -1,5 +1,6 @@
 import {
   clearArchiveRecords,
+  clearArchiveRecordsForIdentity,
   createAnonymousId,
   readArchiveIdentity,
   readArchiveRecords,
@@ -128,5 +129,25 @@ describe('trainingArchive', () => {
 
     clearArchiveRecords()
     expect(readArchiveRecords()).toEqual([])
+  })
+
+  it('clears records for one anonymous identity without deleting other identities', () => {
+    writeArchiveRecords([
+      record(1),
+      record(2),
+      record(3),
+      record(4),
+    ].map((item, index) => ({
+      ...item,
+      id: `record-${index}`,
+      anonymousId: index < 2 ? 'A-001' : 'B-002',
+    })))
+
+    clearArchiveRecordsForIdentity('A-001')
+
+    expect(readArchiveRecords()).toEqual([
+      expect.objectContaining({ id: 'record-2', anonymousId: 'B-002' }),
+      expect.objectContaining({ id: 'record-3', anonymousId: 'B-002' }),
+    ])
   })
 })

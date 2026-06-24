@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import TrainingArchivePage from './TrainingArchivePage'
 import {
+  readArchiveRecords,
   saveArchiveIdentity,
   writeArchiveRecords,
   type TrainingArchiveRecord,
@@ -94,6 +95,24 @@ describe('TrainingArchivePage', () => {
     expect(screen.getByRole('button', { name: '清空' })).toBeEnabled()
   })
 
+  it('keeps clear disabled when only other identities have records', () => {
+    saveArchiveIdentity('体教2401', '01')
+    writeArchiveRecords([
+      record({
+        id: 'other-1',
+        anonymousId: 'OTHER-001',
+        moduleCode: 'F4.1',
+        moduleTitle: '关节点轨迹分析',
+      }),
+    ])
+
+    renderPage()
+
+    expect(screen.getByText('还没有本地训练记录')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '导出 CSV' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: '清空' })).toBeDisabled()
+  })
+
   it('navigates back to pose analysis from the call-to-action', async () => {
     const user = userEvent.setup()
     renderPage()
@@ -101,5 +120,32 @@ describe('TrainingArchivePage', () => {
     await user.click(screen.getByRole('button', { name: '去做一次检测' }))
 
     expect(navigateMock).toHaveBeenCalledWith('/pose-analysis')
+  })
+
+  it('clears only the current anonymous identity records from the page', async () => {
+    const user = userEvent.setup()
+    const identity = saveArchiveIdentity('体教2401', '01')
+    writeArchiveRecords([
+      record({ anonymousId: identity.anonymousId }),
+      record({
+        id: 'other-1',
+        anonymousId: 'OTHER-001',
+        moduleCode: 'F4.1',
+        moduleTitle: '关节点轨迹分析',
+      }),
+    ])
+
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: '清空' }))
+
+    expect(screen.getByText('还没有本地训练记录')).toBeInTheDocument()
+    expect(readArchiveRecords()).toEqual([
+      expect.objectContaining({
+        id: 'other-1',
+        anonymousId: 'OTHER-001',
+        moduleTitle: '关节点轨迹分析',
+      }),
+    ])
   })
 })
