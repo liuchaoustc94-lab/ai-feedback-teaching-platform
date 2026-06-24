@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import {
   ArrowLeft, Camera, CameraOff, Play, Square, Download,
   Activity, AlertCircle, CheckCircle, Info, RotateCcw,
@@ -14,8 +14,71 @@ const postureQualityMap = {
   needs_improvement: { label: '需改善', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
 }
 
+const lessonMap = {
+  'F2.1': {
+    title: '单腿站立平衡测试',
+    description: '单腿站立 30 秒，记录身体对称性、重心晃动趋势和稳定时长。',
+    steps: [
+      '点击"开启摄像头"，允许浏览器访问摄像头权限',
+      '站在摄像头前 2-3 米处，确保全身可见',
+      '单腿站立并保持目视前方，点击"开始检测"',
+      '先完成睁眼条件，再重复一次闭眼条件',
+      '点击"停止并生成报告"，导出课堂记录',
+    ],
+  },
+  'F2.2': {
+    title: '重心轨迹可视化',
+    description: '实时跟踪肩髋关键点，观察站立过程中的动态平衡变化。',
+    steps: [
+      '点击"开启摄像头"，让全身进入画面',
+      '保持单腿或双脚站立，避免身体被遮挡',
+      '点击"开始检测"，观察实时对称性和角度数据',
+      '让学生尝试睁眼/闭眼或不同支撑面条件',
+      '停止检测后导出报告，作为重心轨迹分析记录',
+    ],
+  },
+  'F2.3': {
+    title: '姿态控制评估',
+    description: '基于肩、髋、膝、肘等关节点数据评估姿态对称性和控制质量。',
+    steps: [
+      '点击"开启摄像头"，站到画面中央',
+      '保持自然站立或指定姿势 5-10 秒',
+      '点击"开始检测"，等待关键点稳定识别',
+      '观察左右肩髋偏差和关节角度',
+      '停止检测并生成姿态控制报告',
+    ],
+  },
+  'F4.1': {
+    title: '关节点轨迹分析',
+    description: '实时识别人体骨架，观察动作过程中的关节角度和左右差异。',
+    steps: [
+      '点击"开启摄像头"，确保动作区域完整入镜',
+      '完成深蹲、摆臂或投掷准备等指定动作',
+      '点击"开始检测"，持续采集 5-10 秒',
+      '观察膝、髋、肘角度以及左右对称性',
+      '停止检测并导出动作分析报告',
+    ],
+  },
+  'F4.2': {
+    title: '动作稳定性分析',
+    description: '重复同一动作，比较多次动作中的角度波动和姿态一致性。',
+    steps: [
+      '点击"开启摄像头"，让全身和主要动作关节入镜',
+      '连续重复同一动作 3-5 次',
+      '点击"开始检测"，保持动作节奏稳定',
+      '观察实时角度变化和姿态对称性',
+      '停止检测后导出报告，用于稳定性对比',
+    ],
+  },
+} as const
+
+type LessonCode = keyof typeof lessonMap
+
 export default function PoseAnalysisPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const lessonCode = searchParams.get('lesson') as LessonCode | null
+  const lesson = lessonCode && lessonCode in lessonMap ? lessonMap[lessonCode] : null
   const {
     videoRef,
     canvasRef,
@@ -160,7 +223,7 @@ export default function PoseAnalysisPage() {
             </button>
             <div className="w-px h-5 bg-[#e5e5e5]" />
             <span className="font-serif-cn text-sm text-[#111]">
-              姿态识别与分析
+              {lesson ? `${lessonCode} · ${lesson.title}` : '姿态识别与分析'}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -214,9 +277,11 @@ export default function PoseAnalysisPage() {
               {phase === 'idle' && (
                 <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#111]/80">
                   <Camera size={48} className="text-white/40 mb-4" />
-                  <p className="text-white text-lg font-medium mb-2">姿态识别与分析</p>
+                  <p className="text-white text-lg font-medium mb-2">
+                    {lesson ? lesson.title : '姿态识别与分析'}
+                  </p>
                   <p className="text-white/50 text-sm mb-6 text-center max-w-md px-6">
-                    使用摄像头实时识别身体关节点，分析姿态对称性、关节角度，并生成分析报告
+                    {lesson?.description ?? '使用摄像头实时识别身体关节点，分析姿态对称性、关节角度，并生成分析报告'}
                   </p>
                   <button
                     onClick={handleStartCamera}
@@ -498,18 +563,18 @@ export default function PoseAnalysisPage() {
               <div className="bg-white rounded-2xl p-5 border border-[#e5e5e5]">
                 <h3 className="text-sm font-medium text-[#111] mb-3">使用说明</h3>
                 <div className="space-y-3">
-                  {[
-                    { step: '1', text: '点击"开启摄像头"，允许浏览器访问摄像头权限' },
-                    { step: '2', text: '站在摄像头前 2-3 米处，确保全身可见' },
-                    { step: '3', text: '点击"开始检测"，保持自然站立姿势 5-10 秒' },
-                    { step: '4', text: '点击"停止并生成报告"，查看姿态分析结果' },
-                    { step: '5', text: '可导出报告为文本文件，用于学习档案或研究数据' },
-                  ].map((item) => (
-                    <div key={item.step} className="flex items-start gap-3">
+                  {(lesson?.steps ?? [
+                    '点击"开启摄像头"，允许浏览器访问摄像头权限',
+                    '站在摄像头前 2-3 米处，确保全身可见',
+                    '点击"开始检测"，保持自然站立姿势 5-10 秒',
+                    '点击"停止并生成报告"，查看姿态分析结果',
+                    '可导出报告为文本文件，用于学习档案或研究数据',
+                  ]).map((text, index) => (
+                    <div key={text} className="flex items-start gap-3">
                       <span className="w-5 h-5 rounded-full bg-[#134A34] text-white text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
-                        {item.step}
+                        {index + 1}
                       </span>
-                      <p className="text-xs text-[#555] leading-relaxed">{item.text}</p>
+                      <p className="text-xs text-[#555] leading-relaxed">{text}</p>
                     </div>
                   ))}
                 </div>
