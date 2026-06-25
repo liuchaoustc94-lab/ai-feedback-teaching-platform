@@ -1,13 +1,15 @@
 import { render, screen } from '@testing-library/react'
+import { act } from 'react'
 import { MemoryRouter } from 'react-router'
 import App from './App'
 
 const lenisDestroyMock = vi.fn()
+const lenisRafMock = vi.fn()
 
 vi.mock('@studio-freight/lenis', () => ({
   default: vi.fn(function LenisMock() {
     return {
-      raf: vi.fn(),
+      raf: lenisRafMock,
       destroy: lenisDestroyMock,
     }
   }),
@@ -45,6 +47,7 @@ function renderApp(initialEntry: string) {
 describe('App routes', () => {
   beforeEach(() => {
     lenisDestroyMock.mockClear()
+    lenisRafMock.mockClear()
   })
 
   it('renders the home route', () => {
@@ -66,5 +69,25 @@ describe('App routes', () => {
 
     expect(screen.getByText('我的训练档案')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '跨课堂历史记录' })).toBeInTheDocument()
+  })
+
+  it('runs and cleans up the smooth-scroll animation loop', () => {
+    let rafCallback: FrameRequestCallback | null = null
+    vi.mocked(requestAnimationFrame).mockImplementation((callback) => {
+      rafCallback = callback
+      return 1
+    })
+
+    const { unmount } = renderApp('/training-archive')
+
+    act(() => {
+      rafCallback?.(123)
+    })
+
+    expect(lenisRafMock).toHaveBeenCalledWith(123)
+
+    unmount()
+
+    expect(lenisDestroyMock).toHaveBeenCalled()
   })
 })
