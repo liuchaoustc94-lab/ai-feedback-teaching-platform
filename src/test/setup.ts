@@ -58,3 +58,39 @@ Object.defineProperty(window, 'matchMedia', {
 })
 
 HTMLCanvasElement.prototype.getContext = vi.fn(() => null)
+
+class MockResizeObserver {
+  observe() {}
+
+  unobserve() {}
+
+  disconnect() {}
+}
+
+class MockIntersectionObserver {
+  observe() {}
+
+  unobserve() {}
+
+  disconnect() {}
+
+  takeRecords() {
+    return []
+  }
+}
+
+Object.defineProperty(globalThis, 'ResizeObserver', {
+  value: MockResizeObserver,
+  configurable: true,
+})
+
+Object.defineProperty(globalThis, 'IntersectionObserver', {
+  value: MockIntersectionObserver,
+  configurable: true,
+})
+
+HTMLElement.prototype.scrollIntoView = vi.fn()
+
+HTMLElement.prototype.setPointerCapture = vi.fn()
+HTMLElement.prototype.releasePointerCapture = vi.fn()
+HTMLElement.prototype.hasPointerCapture = vi.fn(() => false)
