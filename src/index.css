@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 7%;
+    --card: 40 7% 97%;
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 0 0% 7%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 40 5% 94%;
+    --secondary-foreground: 0 0% 7%;
+    --muted: 40 5% 94%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 6 78% 49%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 6 78% 49%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 40 4% 82%;
+    --input: 40 4% 82%;
+    --ring: 6 78% 49%;
+    --radius: 0.5rem;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@layer components {
+  .font-serif-cn {
+    font-family: 'Noto Serif SC', 'Times New Roman', Times, serif;
+  }
+
+  .font-sans-cn {
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+  }
+
+  .font-mono-data {
+    font-family: ui-monospace, 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .glow-pulse-anim {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 4px rgba(220, 47, 27, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 12px rgba(220, 47, 27, 0.6);
+    }
+  }
+
+  .infinite-scroll-rail {
+    animation: scroll-rail 30s linear infinite;
+  }
+
+  @keyframes scroll-rail {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

@@ -1,0 +1,21 @@
+[Unit]
+Description=AI Feedback Teaching Platform API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ai-feedback
+Group=ai-feedback
+WorkingDirectory=/var/www/ai-feedback-teaching-platform/current
+EnvironmentFile=/etc/ai-feedback-teaching-platform/api.env
+ExecStart=/opt/aift-conda/bin/uvicorn backend.app.main:create_app --factory --host 127.0.0.1 --port 8001
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
