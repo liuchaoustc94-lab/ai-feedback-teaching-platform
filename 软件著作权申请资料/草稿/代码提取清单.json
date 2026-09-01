@@ -1,0 +1,254 @@
+{
+  "software_name": "AI反馈教学平台",
+  "version": "V1.0",
+  "project_root": ".",
+  "file_count": 23,
+  "material_line_count": 3973,
+  "source_line_count": 4386,
+  "selected_source_line_count": 3950,
+  "lines_per_page": 50,
+  "total_pages": 80,
+  "target_pages": 60,
+  "available_candidate_line_count": 13963,
+  "available_candidate_pages": 280,
+  "supplement_status": "候选源码可达到前30页/后30页要求",
+  "mode": "front30_back30",
+  "selection_file": "软件著作权申请资料\\草稿\\代码文件选择.json",
+  "outputs": [
+    "代码-前30页.md",
+    "代码-后30页.md"
+  ],
+  "files": [
+    {
+      "path": "src/App.tsx",
+      "source_line_count": 96,
+      "blank_line_count": 9,
+      "selected_line_start": 1,
+      "selected_line_end": 96,
+      "selected_line_count": 87,
+      "material_line_start": 1,
+      "material_line_end": 88
+    },
+    {
+      "path": "src/main.tsx",
+      "source_line_count": 10,
+      "blank_line_count": 1,
+      "selected_line_start": 1,
+      "selected_line_end": 10,
+      "selected_line_count": 9,
+      "material_line_start": 89,
+      "material_line_end": 98
+    },
+    {
+      "path": "backend/app/db.py",
+      "source_line_count": 55,
+      "blank_line_count": 11,
+      "selected_line_start": 1,
+      "selected_line_end": 55,
+      "selected_line_count": 44,
+      "material_line_start": 99,
+      "material_line_end": 143
+    },
+    {
+      "path": "backend/app/main.py",
+      "source_line_count": 878,
+      "blank_line_count": 64,
+      "selected_line_start": 1,
+      "selected_line_end": 878,
+      "selected_line_count": 814,
+      "material_line_start": 144,
+      "material_line_end": 958
+    },
+    {
+      "path": "backend/app/models.py",
+      "source_line_count": 90,
+      "blank_line_count": 19,
+      "selected_line_start": 1,
+      "selected_line_end": 90,
+      "selected_line_count": 71,
+      "material_line_start": 959,
+      "material_line_end": 1030
+    },
+    {
+      "path": "backend/app/permissions.py",
+      "source_line_count": 68,
+      "blank_line_count": 13,
+      "selected_line_start": 1,
+      "selected_line_end": 68,
+      "selected_line_count": 55,
+      "material_line_start": 1031,
+      "material_line_end": 1086
+    },
+    {
+      "path": "backend/app/schemas.py",
+      "source_line_count": 103,
+      "blank_line_count": 26,
+      "selected_line_start": 1,
+      "selected_line_end": 103,
+      "selected_line_count": 77,
+      "material_line_start": 1087,
+      "material_line_end": 1164
+    },
+    {
+      "path": "backend/app/security.py",
+      "source_line_count": 47,
+      "blank_line_count": 18,
+      "selected_line_start": 1,
+      "selected_line_end": 47,
+      "selected_line_count": 29,
+      "material_line_start": 1165,
+      "material_line_end": 1194
+    },
+    {
+      "path": "src/pages/AdminUsersPage.tsx",
+      "source_line_count": 212,
+      "blank_line_count": 19,
+      "selected_line_start": 1,
+      "selected_line_end": 212,
+      "selected_line_count": 193,
+      "material_line_start": 1195,
+      "material_line_end": 1388
+    },
+    {
+      "path": "src/pages/ChangePasswordPage.tsx",
+      "source_line_count": 101,
+      "blank_line_count": 3,
+      "selected_line_start": 1,
+      "selected_line_end": 101,
+      "selected_line_count": 98,
+      "material_line_start": 1389,
+      "material_line_end": 1487
+    },
+    {
+      "path": "src/pages/DataCenterPage.tsx",
+      "source_line_count": 143,
+      "blank_line_count": 10,
+      "selected_line_start": 1,
+      "selected_line_end": 143,
+      "selected_line_count": 133,
+      "material_line_start": 1488,
+      "material_line_end": 1621
+    },
+    {
+      "path": "src/pages/HomePage.tsx",
+      "source_line_count": 44,
+      "blank_line_count": 1,
+      "selected_line_start": 1,
+      "selected_line_end": 44,
+      "selected_line_count": 43,
+      "material_line_start": 1622,
+      "material_line_end": 1665
+    },
+    {
+      "path": "src/pages/LoginPage.tsx",
+      "source_line_count": 100,
+      "blank_line_count": 7,
+      "selected_line_start": 1,
+      "selected_line_end": 100,
+      "selected_line_count": 93,
+      "material_line_start": 1666,
+      "material_line_end": 1759
+    },
+    {
+      "path": "src/pages/PoseAnalysisPage.tsx",
+      "source_line_count": 597,
+      "blank_line_count": 40,
+      "selected_line_start": 1,
+      "selected_line_end": 597,
+      "selected_line_count": 557,
+      "material_line_start": 1760,
+      "material_line_end": 2317
+    },
+    {
+      "path": "src/pages/TrainingArchivePage.tsx",
+      "source_line_count": 135,
+      "blank_line_count": 15,
+      "selected_line_start": 1,
+      "selected_line_end": 135,
+      "selected_line_count": 120,
+      "material_line_start": 2318,
+      "material_line_end": 2438
+    },
+    {
+      "path": "src/components/UserMenu.tsx",
+      "source_line_count": 118,
+      "blank_line_count": 7,
+      "selected_line_start": 1,
+      "selected_line_end": 118,
+      "selected_line_count": 111,
+      "material_line_start": 2439,
+      "material_line_end": 2550
+    },
+    {
+      "path": "src/hooks/useMediaPipePose.ts",
+      "source_line_count": 346,
+      "blank_line_count": 49,
+      "selected_line_start": 1,
+      "selected_line_end": 346,
+      "selected_line_count": 297,
+      "material_line_start": 2551,
+      "material_line_end": 2848
+    },
+    {
+      "path": "src/lib/api.ts",
+      "source_line_count": 315,
+      "blank_line_count": 37,
+      "selected_line_start": 1,
+      "selected_line_end": 315,
+      "selected_line_count": 278,
+      "material_line_start": 2849,
+      "material_line_end": 3127
+    },
+    {
+      "path": "src/lib/modules.ts",
+      "source_line_count": 48,
+      "blank_line_count": 6,
+      "selected_line_start": 1,
+      "selected_line_end": 48,
+      "selected_line_count": 42,
+      "material_line_start": 3128,
+      "material_line_end": 3170
+    },
+    {
+      "path": "src/lib/poseMetrics.ts",
+      "source_line_count": 250,
+      "blank_line_count": 30,
+      "selected_line_start": 1,
+      "selected_line_end": 250,
+      "selected_line_count": 220,
+      "material_line_start": 3171,
+      "material_line_end": 3391
+    },
+    {
+      "path": "src/lib/trainingArchive.ts",
+      "source_line_count": 37,
+      "blank_line_count": 4,
+      "selected_line_start": 1,
+      "selected_line_end": 37,
+      "selected_line_count": 33,
+      "material_line_start": 3392,
+      "material_line_end": 3425
+    },
+    {
+      "path": "public/platform-auth.js",
+      "source_line_count": 424,
+      "blank_line_count": 29,
+      "selected_line_start": 1,
+      "selected_line_end": 424,
+      "selected_line_count": 395,
+      "material_line_start": 3426,
+      "material_line_end": 3821
+    },
+    {
+      "path": "src/auth/AuthContext.tsx",
+      "source_line_count": 169,
+      "blank_line_count": 18,
+      "selected_line_start": 1,
+      "selected_line_end": 169,
+      "selected_line_count": 151,
+      "material_line_start": 3822,
+      "material_line_end": 3973
+    }
+  ],
+  "safe_software_filename": "AI反馈教学平台"
+}

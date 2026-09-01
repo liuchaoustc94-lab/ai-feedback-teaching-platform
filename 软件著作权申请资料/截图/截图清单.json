@@ -1,0 +1,25 @@
+{
+  "status": "ok",
+  "method": "user-supplied",
+  "screenshots": [
+    {
+      "route": "",
+      "url": "",
+      "path": "软件著作权申请资料\\截图\\01-data-center.png",
+      "source": "软件著作权申请资料\\用户截图\\data-center.png"
+    },
+    {
+      "route": "",
+      "url": "",
+      "path": "软件著作权申请资料\\截图\\02-platform-modules.png",
+      "source": "软件著作权申请资料\\用户截图\\platform-modules.png"
+    },
+    {
+      "route": "",
+      "url": "",
+      "path": "软件著作权申请资料\\截图\\03-user-menu.png",
+      "source": "软件著作权申请资料\\用户截图\\user-menu.png"
+    }
+  ],
+  "errors": []
+}

@@ -30,3 +30,7 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+
+# Software copyright materials: OfficeCLI intermediate test documents
+软件著作权申请资料/正式资料/*-officecli.docx
+软件著作权申请资料/正式资料/style-test.docx

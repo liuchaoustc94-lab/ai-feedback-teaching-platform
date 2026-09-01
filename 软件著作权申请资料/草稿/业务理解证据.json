@@ -1,0 +1,29 @@
+{
+  "software_name": "AI反馈教学平台",
+  "project_root": ".",
+  "instruction": "本文件只收集证据，不决定行业、功能或手册结构。",
+  "code_evidence": [
+    "src/main.tsx",
+    "src/App.tsx",
+    "backend/app/main.py",
+    "src/auth/AuthContext.tsx",
+    "src/lib/modules.ts",
+    "backend/app/permissions.py",
+    "src/hooks/useMediaPipePose.ts",
+    "src/lib/poseMetrics.ts",
+    "src/lib/trainingArchive.ts",
+    "backend/app/models.py"
+  ],
+  "document_evidence": [
+    "README.md",
+    "docs/PLATFORM_GUIDE.md",
+    "deploy/README.md",
+    "backend/requirements.txt"
+  ],
+  "screenshot_evidence": [
+    "../截图/02-platform-modules.png",
+    "../截图/03-user-menu.png",
+    "../截图/01-data-center.png"
+  ],
+  "summary": "项目证据支持浏览器课堂测评、姿态指标分析、训练记录、数据中心、用户权限与安全导出等业务口径。"
+}
